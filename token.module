@@ -409,6 +409,14 @@ function token_get_date_token_info($description, $token_prefix = '') {
   $tokens[$token_prefix . 'ddd']    = t("!description day (abbreviation)", array('!description' => $description));
   $tokens[$token_prefix . 'dd']     = t("!description day (two digits with leading zeros)", array('!description' => $description));
   $tokens[$token_prefix . 'd']      = t("!description day (one or two digits without leading zeros)", array('!description' => $description));
+  $tokens[$token_prefix . 'a']      = t("!description am/pm (lowercase)", array('!description' => $description));
+  $tokens[$token_prefix . 'A']      = t("!description AM/PM (uppercase)", array('!description' => $description));
+  $tokens[$token_prefix . 'h']      = t("!description hour (12-hour format, without leading zeros)", array('!description' => $description));
+  $tokens[$token_prefix . 'hh']     = t("!description hour (24-hour format, without leading zeros)", array('!description' => $description));
+  $tokens[$token_prefix . 'H']      = t("!description hour (12-hour format, with leading zeros)", array('!description' => $description));
+  $tokens[$token_prefix . 'HH']     = t("!description hour (24-hour format, with leading zeros)", array('!description' => $description));
+  $tokens[$token_prefix . 'mn']     = t("!description minute (with leading zeros)", array('!description' => $description));
+  $tokens[$token_prefix . 's']      = t("!description second (with leading zeros)", array('!description' => $description));
   $tokens[$token_prefix . 'raw']    = t("!description in UNIX timestamp format (1269441371)", array('!description' => $description));
   $tokens[$token_prefix . 'since']  = t("!description in 'time-since' format. (40 years 3 months)", array('!description' => $description));
   return $tokens;
@@ -440,6 +448,14 @@ function token_get_date_token_values($timestamp = NULL, $token_prefix = '') {
     'ddd' => 'D',
     'dd' => 'd',
     'd' => 'j',
+    'a' => 'a',
+    'A' => 'A',    
+    'h' => 'g',
+    'hh' => 'G',
+    'H' => 'h',
+    'HH' => 'H',    
+    'mn' => 'i',
+    's' => 's',
   );
   foreach ($formats as $token => $format) {
     $tokens[$token_prefix . $token] = format_date($timestamp, 'custom', $format, $timezone);

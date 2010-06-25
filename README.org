@@ -1,0 +1,39 @@
+* Token module for drupal 
+
+
+** Description
+
+Token module provides a clean, safe and low maintenance way of using
+Drupal attributes, like post date, post autor, node id, etc, in your
+site. 
+
+Instead of enabling something like the [[http://drupal.org/handbook/modules/php][PHP filter]] and mingling text
+and code you do it by using *only text* where there are strings
+enclosed in square brackets that represent particular attributes of
+your Drupal site. For example =[node:nid]= might represent the node
+ID. Thus instead of doing =$node->nid= after enabling the PHP filter
+you just insert the =[node:nid]= string and you're done.
+
+Here's the [[http://drupal.org/handbook/modules/token][drupal.org]] handbook page on the [[http://drupal.org/project/tokens][token]] module.
+
+This version is a patched version of the module against the
+*dev-version* that provides additional date related tokens for nodes
+and comments.
+
++ AM/PM information
+
++ hour information - both 12 and 24 hour formats - with and without
+  leading zeros
+
++ minute information
+
++ second information
+
+** Patch 
+
+The patch is included in the directory of the module.
+
+** Why haven't you used the tokenSTARTER kit and roll out your own
+
+Because I think that theses strings are quite useful and *should*,
+IMHO, be made part of the official release.

@@ -1,0 +1,138 @@
+diff --git token.module token.module
+index acb9009..0d4bc99 100644
+--- token.module
++++ token.module
+@@ -409,6 +409,14 @@ function token_get_date_token_info($description, $token_prefix = '') {
+   $tokens[$token_prefix . 'ddd']    = t("!description day (abbreviation)", array('!description' => $description));
+   $tokens[$token_prefix . 'dd']     = t("!description day (two digits with leading zeros)", array('!description' => $description));
+   $tokens[$token_prefix . 'd']      = t("!description day (one or two digits without leading zeros)", array('!description' => $description));
++  $tokens[$token_prefix . 'a']      = t("!description am/pm (lowercase)", array('!description' => $description));
++  $tokens[$token_prefix . 'A']      = t("!description AM/PM (uppercase)", array('!description' => $description));
++  $tokens[$token_prefix . 'h']      = t("!description hour (12-hour format, without leading zeros)", array('!description' => $description));
++  $tokens[$token_prefix . 'hh']     = t("!description hour (24-hour format, without leading zeros)", array('!description' => $description));
++  $tokens[$token_prefix . 'H']      = t("!description hour (12-hour format, with leading zeros)", array('!description' => $description));
++  $tokens[$token_prefix . 'HH']     = t("!description hour (24-hour format, with leading zeros)", array('!description' => $description));
++  $tokens[$token_prefix . 'mn']     = t("!description minute (with leading zeros)", array('!description' => $description));
++  $tokens[$token_prefix . 's']      = t("!description second (with leading zeros)", array('!description' => $description));
+   $tokens[$token_prefix . 'raw']    = t("!description in UNIX timestamp format (1269441371)", array('!description' => $description));
+   $tokens[$token_prefix . 'since']  = t("!description in 'time-since' format. (40 years 3 months)", array('!description' => $description));
+   return $tokens;
+@@ -440,6 +448,14 @@ function token_get_date_token_values($timestamp = NULL, $token_prefix = '') {
+     'ddd' => 'D',
+     'dd' => 'd',
+     'd' => 'j',
++    'a' => 'a',
++    'A' => 'A',    
++    'h' => 'g',
++    'hh' => 'G',
++    'H' => 'h',
++    'HH' => 'H',    
++    'mn' => 'i',
++    's' => 's',
+   );
+   foreach ($formats as $token => $format) {
+     $tokens[$token_prefix . $token] = format_date($timestamp, 'custom', $format, $timezone);
+diff --git token.test token.test
+index e5e61ab..b519fa7 100644
+--- token.test
++++ token.test
+@@ -86,8 +86,8 @@ class TokenNodeTestCase extends TokenTestHelper {
+ 
+   function testNodeTokens() {
+     $time = time();
+-    $created = gmmktime(0, 0, 0, 11, 19, 1978);
+-    $changed = gmmktime(0, 0, 0, 7, 4, 1984);
++    $created = gmmktime(1, 2, 8, 11, 19, 1978);
++    $changed = gmmktime(2, 2, 9, 7, 4, 1984);
+     $node = $this->drupalCreateNode(array(
+       'type' => 'page',
+       'language' => 'und',
+@@ -104,7 +104,7 @@ class TokenNodeTestCase extends TokenTestHelper {
+       'language' => 'und',
+       'node-path' => 'content/first-node',
+       'node-url' => url('node/' . $node->nid, array('absolute' => TRUE)),
+-      'small' => '11/19/1978 - 00:00',
++      'small' => '11/19/1978 - 01:02',
+       'yyyy' => '1978',
+       'yy' => '78',
+       'month' => 'November',
+@@ -117,9 +117,17 @@ class TokenNodeTestCase extends TokenTestHelper {
+       'ddd' => 'Sun',
+       'dd' => '19',
+       'd' => '19',
+-      'raw' => 280281600,
+-      'since' => format_interval($time - 280281600),
+-      'mod-small' => '07/04/1984 - 00:00',
++      'a' => 'am',       
++      'A' => 'AM',       
++      'h' => '1',              
++      'hh' => '1',       
++      'H' => '01',       
++      'HH' => '01',      
++      'mn' => '02',      
++      's' => '08',
++      'raw' => 280285328,
++      'since' => format_interval($time - 280285328),
++      'mod-small' => '07/04/1984 - 02:02',
+       'mod-yyyy' => '1984',
+       'mod-yy' => '84',
+       'mod-month' => 'July',
+@@ -132,8 +140,16 @@ class TokenNodeTestCase extends TokenTestHelper {
+       'mod-ddd' => 'Wed',
+       'mod-dd' => '04',
+       'mod-d' => '4',
+-      'mod-raw' => 457747200,
+-      'mod-since' => format_interval($time - 457747200),
++      'mod-a' => 'am',       
++      'mod-A' => 'AM',       
++      'mod-h' => '2',        
++      'mod-hh' => '2',       
++      'mod-H' => '02',       
++      'mod-HH' => '02',      
++      'mod-mn' => '02',      
++      'mod-s' => '09',       
++      'mod-raw' => 457754529,
++      'mod-since' => format_interval($time - 457754529),
+       'log' => filter_xss($node->log),
+       'log-raw' => $node->log,
+     );
+@@ -180,9 +196,11 @@ class TokenCommentTestCase extends TokenTestHelper {
+ 
+   function testCommentTokens() {
+     $time = time();
+-    $comment = $this->createComment(array(
+-      'timestamp' => gmmktime(0, 0, 0, 7, 4, 1984),
+-    ));
++    $comment = $this->createComment(
++      array(
++        'timestamp' => gmmktime(2, 2, 9, 7, 4, 1984),
++      )
++    );
+ 
+     $tokens = array(
+       'comment-cid' => $comment->cid,
+@@ -199,8 +217,16 @@ class TokenCommentTestCase extends TokenTestHelper {
+       'comment-ddd' => 'Wed',
+       'comment-dd' => '04',
+       'comment-d' => '4',
+-      'comment-raw' => '457747200',
+-      'comment-since' => format_interval($time - 457747200),
++      'comment-a' => 'am',         
++      'comment-A' => 'AM',         
++      'comment-h' => '2',          
++      'comment-hh' => '2',         
++      'comment-H' => '02',         
++      'comment-HH' => '02',        
++      'comment-mn' => '02',        
++      'comment-s' => '09',         
++      'comment-raw' => '457754529',
++      'comment-since' => format_interval($time - 457754529),
+     );
+     $this->assertTokens('comment', $comment, $tokens);
+ 
+@@ -371,5 +397,4 @@ class TokenTestCase extends DrupalWebTestCase {
+     $this->assertText('Hello simpletest | '. $user->name  .' | '. $user->uid .' | '. $user->mail .' | '. $site_name .' | '. $site_mail, 'Tokenized message displays');
+ 
+   }
+-
+ }
