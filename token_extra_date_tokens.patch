@@ -1,8 +1,8 @@
 diff --git token.module token.module
-index acb9009..0d4bc99 100644
+index 44a4d95..6b0bba2 100644
 --- token.module
 +++ token.module
-@@ -409,6 +409,14 @@ function token_get_date_token_info($description, $token_prefix = '') {
+@@ -442,6 +442,14 @@ function token_get_date_token_info($description, $token_prefix = '') {
    $tokens[$token_prefix . 'ddd']    = t("!description day (abbreviation)", array('!description' => $description));
    $tokens[$token_prefix . 'dd']     = t("!description day (two digits with leading zeros)", array('!description' => $description));
    $tokens[$token_prefix . 'd']      = t("!description day (one or two digits without leading zeros)", array('!description' => $description));
@@ -17,7 +17,7 @@ index acb9009..0d4bc99 100644
    $tokens[$token_prefix . 'raw']    = t("!description in UNIX timestamp format (1269441371)", array('!description' => $description));
    $tokens[$token_prefix . 'since']  = t("!description in 'time-since' format. (40 years 3 months)", array('!description' => $description));
    return $tokens;
-@@ -440,6 +448,14 @@ function token_get_date_token_values($timestamp = NULL, $token_prefix = '') {
+@@ -473,6 +481,14 @@ function token_get_date_token_values($timestamp = NULL, $token_prefix = '') {
      'ddd' => 'D',
      'dd' => 'd',
      'd' => 'j',
@@ -33,7 +33,7 @@ index acb9009..0d4bc99 100644
    foreach ($formats as $token => $format) {
      $tokens[$token_prefix . $token] = format_date($timestamp, 'custom', $format, $timezone);
 diff --git token.test token.test
-index e5e61ab..b519fa7 100644
+index e5e61ab..4ac81b0 100644
 --- token.test
 +++ token.test
 @@ -86,8 +86,8 @@ class TokenNodeTestCase extends TokenTestHelper {
@@ -70,7 +70,7 @@ index e5e61ab..b519fa7 100644
 +      'H' => '01',       
 +      'HH' => '01',      
 +      'mn' => '02',      
-+      's' => '08',
++      's' => '08',       
 +      'raw' => 280285328,
 +      'since' => format_interval($time - 280285328),
 +      'mod-small' => '07/04/1984 - 02:02',
@@ -96,22 +96,16 @@ index e5e61ab..b519fa7 100644
        'log' => filter_xss($node->log),
        'log-raw' => $node->log,
      );
-@@ -180,9 +196,11 @@ class TokenCommentTestCase extends TokenTestHelper {
- 
-   function testCommentTokens() {
-     $time = time();
--    $comment = $this->createComment(array(
+@@ -170,7 +186,7 @@ class TokenCommentTestCase extends TokenTestHelper {
+       'subject' => $this->randomName(),
+       'comment' => $this->randomName(64),
+       'format' => 1,
 -      'timestamp' => gmmktime(0, 0, 0, 7, 4, 1984),
--    ));
-+    $comment = $this->createComment(
-+      array(
-+        'timestamp' => gmmktime(2, 2, 9, 7, 4, 1984),
-+      )
-+    );
++      'timestamp' => gmmktime(2, 2, 9, 7, 4, 1984),
+       'status' => COMMENT_PUBLISHED,
+     );
  
-     $tokens = array(
-       'comment-cid' => $comment->cid,
-@@ -199,8 +217,16 @@ class TokenCommentTestCase extends TokenTestHelper {
+@@ -199,8 +215,16 @@ class TokenCommentTestCase extends TokenTestHelper {
        'comment-ddd' => 'Wed',
        'comment-dd' => '04',
        'comment-d' => '4',
@@ -130,9 +124,3 @@ index e5e61ab..b519fa7 100644
      );
      $this->assertTokens('comment', $comment, $tokens);
  
-@@ -371,5 +397,4 @@ class TokenTestCase extends DrupalWebTestCase {
-     $this->assertText('Hello simpletest | '. $user->name  .' | '. $user->uid .' | '. $user->mail .' | '. $site_name .' | '. $site_mail, 'Tokenized message displays');
- 
-   }
--
- }
