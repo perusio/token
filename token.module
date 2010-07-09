@@ -1,5 +1,5 @@
 <?php
-// $Id: token.module,v 1.7.4.27 2010/07/04 22:06:08 davereid Exp $
+// $Id: token.module,v 1.7.4.29 2010/07/05 19:49:49 davereid Exp $
 
 /**
  * @file
@@ -111,11 +111,11 @@ function token_token_list($type = 'all') {
   $tokens['global']['user-name']    = t('The name of the currently logged in user.');
   $tokens['global']['user-id']      = t('The user ID of the currently logged in user.');
   $tokens['global']['user-mail']    = t('The email address of the currently logged in user.');
-  $tokens['global']['site-url']     = t('The URL of the current Drupal website.');
-  $tokens['global']['site-name']    = t('The name of the current Drupal website.');
-  $tokens['global']['site-slogan']  = t('The slogan of the current Drupal website.');
-  $tokens['global']['site-mission'] = t('The mission of the current Drupal website.');
-  $tokens['global']['site-mail']    = t('The contact email address for the current Drupal website.');
+  $tokens['global']['site-url']     = t("The URL of the site's front page.");
+  $tokens['global']['site-name']    = t('The name of the site.');
+  $tokens['global']['site-slogan']  = t('The slogan of the site.');
+  $tokens['global']['site-mission'] = t("The optional 'mission' of the site.");
+  $tokens['global']['site-mail']    = t('The administrative email address for the site.');
   $tokens['global'] += token_get_date_token_info(t('The current'), 'site-date-');
   return $tokens;
 }
@@ -442,14 +442,6 @@ function token_get_date_token_info($description, $token_prefix = '') {
   $tokens[$token_prefix . 'ddd']    = t("!description day (abbreviation)", array('!description' => $description));
   $tokens[$token_prefix . 'dd']     = t("!description day (two digits with leading zeros)", array('!description' => $description));
   $tokens[$token_prefix . 'd']      = t("!description day (one or two digits without leading zeros)", array('!description' => $description));
-  $tokens[$token_prefix . 'a']      = t("!description am/pm (lowercase)", array('!description' => $description));
-  $tokens[$token_prefix . 'A']      = t("!description AM/PM (uppercase)", array('!description' => $description));
-  $tokens[$token_prefix . 'h']      = t("!description hour (12-hour format, without leading zeros)", array('!description' => $description));
-  $tokens[$token_prefix . 'hh']     = t("!description hour (24-hour format, without leading zeros)", array('!description' => $description));
-  $tokens[$token_prefix . 'H']      = t("!description hour (12-hour format, with leading zeros)", array('!description' => $description));
-  $tokens[$token_prefix . 'HH']     = t("!description hour (24-hour format, with leading zeros)", array('!description' => $description));
-  $tokens[$token_prefix . 'mn']     = t("!description minute (with leading zeros)", array('!description' => $description));
-  $tokens[$token_prefix . 's']      = t("!description second (with leading zeros)", array('!description' => $description));
   $tokens[$token_prefix . 'raw']    = t("!description in UNIX timestamp format (1269441371)", array('!description' => $description));
   $tokens[$token_prefix . 'since']  = t("!description in 'time-since' format. (40 years 3 months)", array('!description' => $description));
   return $tokens;
@@ -481,14 +473,6 @@ function token_get_date_token_values($timestamp = NULL, $token_prefix = '') {
     'ddd' => 'D',
     'dd' => 'd',
     'd' => 'j',
-    'a' => 'a',
-    'A' => 'A',    
-    'h' => 'g',
-    'hh' => 'G',
-    'H' => 'h',
-    'HH' => 'H',    
-    'mn' => 'i',
-    's' => 's',
   );
   foreach ($formats as $token => $format) {
     $tokens[$token_prefix . $token] = format_date($timestamp, 'custom', $format, $timezone);
@@ -566,4 +550,29 @@ function token_scan($text, $leading = TOKEN_PREFIX, $trailing = TOKEN_SUFFIX) {
   $trailing = preg_quote($trailing, '/');
   preg_match_all("/{$leading}([^\s]+?){$trailing}/", $text, $matches);
   return $matches[1];
+}
+
+/**
+ * Validate a form element that should have tokens in it.
+ *
+ * Form elements that want to add this validation should have the #token_types
+ * parameter defined.
+ *
+ * For example:
+ * @code
+ * $form['my_node_text_element'] = array(
+ *   '#type' => 'textfield',
+ *   '#title' => t('Some text to token-ize that has a node context.'),
+ *   '#default_value' => 'The title of this node is [node:title].',
+ *   '#element_validate' => array('token_element_validate_token_context'),
+ *   '#token_types' => array('node'),
+ * );
+ * @endcode
+ */
+function token_element_validate_token_context(&$element, &$form_state) {
+  $value = isset($element['#value']) ? $element['#value'] : $element['#default_value'];
+  $invalid_tokens = token_get_invalid_tokens_by_context($value, $element['#token_types']);
+  if ($invalid_tokens) {
+    form_error($element, t('The %element-title is using the following invalid tokens: @invalid-tokens.', array('%element-title' => $element['#title'], '@invalid-tokens' => implode(', ', $invalid_tokens))));
+  }
 }
