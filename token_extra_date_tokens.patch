@@ -1,5 +1,5 @@
 diff --git token.module token.module
-index 44a4d95..6b0bba2 100644
+index 83a5d9d..4fa1d84 100644
 --- token.module
 +++ token.module
 @@ -442,6 +442,14 @@ function token_get_date_token_info($description, $token_prefix = '') {
@@ -33,7 +33,7 @@ index 44a4d95..6b0bba2 100644
    foreach ($formats as $token => $format) {
      $tokens[$token_prefix . $token] = format_date($timestamp, 'custom', $format, $timezone);
 diff --git token.test token.test
-index e5e61ab..4ac81b0 100644
+index 257b4ef..1a50704 100644
 --- token.test
 +++ token.test
 @@ -86,8 +86,8 @@ class TokenNodeTestCase extends TokenTestHelper {
@@ -121,6 +121,6 @@ index e5e61ab..4ac81b0 100644
 +      'comment-s' => '09',         
 +      'comment-raw' => '457754529',
 +      'comment-since' => format_interval($time - 457754529),
+       'comment-node-title' => check_plain($this->node->title),
+       'comment-node-title-raw' => $this->node->title,
      );
-     $this->assertTokens('comment', $comment, $tokens);
- 
