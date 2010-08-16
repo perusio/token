@@ -1,5 +1,5 @@
 <?php
-// $Id: token.test,v 1.1.2.13 2010/07/05 19:10:09 davereid Exp $
+// $Id: token.test,v 1.1.2.14 2010/08/09 18:39:54 davereid Exp $
 
 /**
  * @file
@@ -14,7 +14,12 @@ class TokenTestHelper extends DrupalWebTestCase {
     // Call parent::setUp() allowing test cases to pass further modules.
     $modules = func_get_args();
     $modules = array_merge(array('path', 'token'), $modules);
-    call_user_func_array(array('parent', 'setUp'), $modules);
+    
+    $parent_callback = 'parent::setUp';
+    if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+      $parent_callback = array($this, 'parent::setUp');
+    }
+    call_user_func_array($parent_callback, $modules);
   }
 
   function assertToken($type, $object, $token, $expected, array $options = array()) {
@@ -117,6 +122,19 @@ class TokenNodeTestCase extends TokenTestHelper {
       'ddd' => 'Sun',
       'dd' => '19',
       'd' => '19',
+      'small' => '11/19/1978 - 01:02',
+      'yyyy' => '1978',
+      'yy' => '78',
+      'month' => 'November',
+      'mon' => 'Nov',
+      'mm' => '11',
+      'm' => '11',
+      'ww' => '46',
+      'date' => '7',
+      'day' => 'Sunday',
+      'ddd' => 'Sun',
+      'dd' => '19',
+      'd' => '19',
       'a' => 'am',       
       'A' => 'AM',       
       'h' => '1',              
@@ -197,7 +215,7 @@ class TokenCommentTestCase extends TokenTestHelper {
   function testCommentTokens() {
     $time = time();
     $comment = $this->createComment(array(
-      'timestamp' => gmmktime(0, 0, 0, 7, 4, 1984),
+      'timestamp' => gmmktime(2, 2, 9, 7, 4, 1984),
     ));
 
     $tokens = array(

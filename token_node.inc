@@ -1,5 +1,5 @@
 <?php
-// $Id: token_node.inc,v 1.5.4.27 2010/07/05 19:49:49 davereid Exp $
+// $Id: token_node.inc,v 1.5.4.30 2010/07/24 20:25:04 davereid Exp $
 
 /**
  * @file
@@ -37,16 +37,15 @@ function node_token_values($type, $object = NULL, $options = array()) {
       $values['title-raw']          = $node->title;
       $values['node-path-raw']      = drupal_get_path_alias('node/'. $node->nid);
       $values['node-path']          = check_plain($values['node-path-raw']);
-      $values['node-url-raw']       = url('node/' . $node->nid, array('absolute' => TRUE));
-      $values['node-url']           = check_plain($values['node-url-raw']);
+      $values['node-url']           = url('node/' . $node->nid, array('absolute' => TRUE));
       $values['author-uid']         = $node->uid;
       $values['author-name']        = check_plain($account->name);
       $values['author-name-raw']    = $account->name;
       $values['author-mail']        = check_plain($account->mail);
       $values['author-mail-raw']    = $account->mail;
 
-      $values['log']                = filter_xss($node->log);
-      $values['log-raw']            = $node->log;
+      $values['log-raw']            = isset($node->log) ? $node->log : '';
+      $values['log']                = filter_xss($values['log-raw']);
 
       if (module_exists('comment')) {
         $values['node_comment_count'] = isset($node->comment_count) ? $node->comment_count : 0;
@@ -181,7 +180,6 @@ function node_token_list($type = 'all') {
     $tokens['node']['node-path']       = t('The URL alias of the node.');
     $tokens['node']['node-path-raw']   = t('The URL alias of the node.');
     $tokens['node']['node-url']        = t('The URL of the node.');
-    $tokens['node']['node-url-raw']    = t('The URL of the node.');
 
     $tokens['node']['author-uid']      = t("The unique ID of the author of the node.");
     $tokens['node']['author-name']     = t("The login name of the author of the node.");
