@@ -1,8 +1,8 @@
 diff --git token.module token.module
-index 83a5d9d..4fa1d84 100644
+index 316c072..de8194e 100644
 --- token.module
 +++ token.module
-@@ -442,6 +442,14 @@ function token_get_date_token_info($description, $token_prefix = '') {
+@@ -458,6 +458,14 @@ function token_get_date_token_info($description, $token_prefix = '') {
    $tokens[$token_prefix . 'ddd']    = t("!description day (abbreviation)", array('!description' => $description));
    $tokens[$token_prefix . 'dd']     = t("!description day (two digits with leading zeros)", array('!description' => $description));
    $tokens[$token_prefix . 'd']      = t("!description day (one or two digits without leading zeros)", array('!description' => $description));
@@ -17,7 +17,7 @@ index 83a5d9d..4fa1d84 100644
    $tokens[$token_prefix . 'raw']    = t("!description in UNIX timestamp format (1269441371)", array('!description' => $description));
    $tokens[$token_prefix . 'since']  = t("!description in 'time-since' format. (40 years 3 months)", array('!description' => $description));
    return $tokens;
-@@ -473,6 +481,14 @@ function token_get_date_token_values($timestamp = NULL, $token_prefix = '') {
+@@ -489,6 +497,14 @@ function token_get_date_token_values($timestamp = NULL, $token_prefix = '') {
      'ddd' => 'D',
      'dd' => 'd',
      'd' => 'j',
@@ -33,10 +33,10 @@ index 83a5d9d..4fa1d84 100644
    foreach ($formats as $token => $format) {
      $tokens[$token_prefix . $token] = format_date($timestamp, 'custom', $format, $timezone);
 diff --git token.test token.test
-index 257b4ef..1a50704 100644
+index ee1321a..f27c1d4 100644
 --- token.test
 +++ token.test
-@@ -86,8 +86,8 @@ class TokenNodeTestCase extends TokenTestHelper {
+@@ -91,8 +91,8 @@ class TokenNodeTestCase extends TokenTestHelper {
  
    function testNodeTokens() {
      $time = time();
@@ -47,7 +47,7 @@ index 257b4ef..1a50704 100644
      $node = $this->drupalCreateNode(array(
        'type' => 'page',
        'language' => 'und',
-@@ -104,7 +104,7 @@ class TokenNodeTestCase extends TokenTestHelper {
+@@ -109,7 +109,7 @@ class TokenNodeTestCase extends TokenTestHelper {
        'language' => 'und',
        'node-path' => 'content/first-node',
        'node-url' => url('node/' . $node->nid, array('absolute' => TRUE)),
@@ -56,7 +56,7 @@ index 257b4ef..1a50704 100644
        'yyyy' => '1978',
        'yy' => '78',
        'month' => 'November',
-@@ -117,9 +117,17 @@ class TokenNodeTestCase extends TokenTestHelper {
+@@ -122,9 +122,17 @@ class TokenNodeTestCase extends TokenTestHelper {
        'ddd' => 'Sun',
        'dd' => '19',
        'd' => '19',
@@ -77,7 +77,7 @@ index 257b4ef..1a50704 100644
        'mod-yyyy' => '1984',
        'mod-yy' => '84',
        'mod-month' => 'July',
-@@ -132,8 +140,16 @@ class TokenNodeTestCase extends TokenTestHelper {
+@@ -137,8 +145,16 @@ class TokenNodeTestCase extends TokenTestHelper {
        'mod-ddd' => 'Wed',
        'mod-dd' => '04',
        'mod-d' => '4',
@@ -96,7 +96,7 @@ index 257b4ef..1a50704 100644
        'log' => filter_xss($node->log),
        'log-raw' => $node->log,
      );
-@@ -170,7 +186,7 @@ class TokenCommentTestCase extends TokenTestHelper {
+@@ -175,7 +191,7 @@ class TokenCommentTestCase extends TokenTestHelper {
        'subject' => $this->randomName(),
        'comment' => $this->randomName(64),
        'format' => 1,
@@ -105,7 +105,16 @@ index 257b4ef..1a50704 100644
        'status' => COMMENT_PUBLISHED,
      );
  
-@@ -199,8 +215,16 @@ class TokenCommentTestCase extends TokenTestHelper {
+@@ -186,7 +202,7 @@ class TokenCommentTestCase extends TokenTestHelper {
+   function testCommentTokens() {
+     $time = time();
+     $comment = $this->createComment(array(
+-      'timestamp' => gmmktime(0, 0, 0, 7, 4, 1984),
++      'timestamp' => gmmktime(2, 2, 9, 7, 4, 1984),
+     ));
+ 
+     $tokens = array(
+@@ -204,8 +220,16 @@ class TokenCommentTestCase extends TokenTestHelper {
        'comment-ddd' => 'Wed',
        'comment-dd' => '04',
        'comment-d' => '4',
